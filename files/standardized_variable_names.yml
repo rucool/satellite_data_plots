@@ -1,0 +1,16 @@
+# PREFERRED_NAME:
+#     standard_name: CF_STANDARD_NAME
+#     alternate_names: ALT_NAME_1,ALT_NAME_2,ALT_NAME_3,ETC
+time:
+    standard_name: time
+    alternate_names: time2
+longitude:
+    standard_name: longitude
+    alternate_names: long,lon
+latitude:
+    standard_name: latitude
+    alternate_names: lat
+sst:
+    standard_name: sea_surface_temperature,sea_surface_skin_temperature
+z:
+    alternate_names: z

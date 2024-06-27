@@ -1,0 +1,163 @@
+# SHORT_REGION_NAME (for figure name):
+#     name: LONG_REGION_NAME (for figure title, required)
+#     minLon: MIN_LONGITUDE (decimal degrees east, required)
+#     maxLon: MAX_LONGITUDE (decimal degrees east, required)
+#     minLat: MIN_LATITUDE (decimal degrees north, required)
+#     maxLat: MAX_LATITUDE (decimal degrees north, required)
+#     minT: MIN_COLORMAP_TEMPERATURE (degrees C, optional, defaults to monthly climatology)
+#     maxT: MAX_COLORMAP_TEMPERATURE (degrees C, optional, defaults to monthly climatology)
+#     isobaths: ISOBATHS_TO_PLOT (meters, optional, defaults to none)
+alabama:
+    name: Alabama
+    minLon: -88.33317
+    maxLon: -82.39567
+    minLat: 26.93067
+    maxLat: 30.84267
+    isobaths: 15,37,183
+bahamas:
+    name: Bahamas
+    minLon: -80.94633
+    maxLon: -76.08567
+    minLat: 23.7365
+    maxLat: 27.77983
+    isobaths: 183
+bigbight:
+    name: Northeast
+    minLon: -77.006
+    maxLon: -62.994
+    minLat: 34.9951
+    maxLat: 46.00416
+    isobaths: 46,183
+capecod:
+    name: Cape Cod
+    minLon: -72.3985
+    maxLon: -68.00417
+    minLat: 40.102
+    maxLat: 42.959
+    isobaths: 37,183
+capehat:
+    name: Cape Hatteras
+    minLon: -79.29517
+    maxLon: -73.04133
+    minLat: 33.0685
+    maxLat: 37
+    isobaths: 37,183
+chess:
+    name: Chesapeake Bay
+    minLon: -77.006
+    maxLon: -72.26817
+    minLat: 36.271
+    maxLat: 39.74617
+    isobaths: 37,183
+eastcoast:
+    name: Eastcoast
+    minLon: -100
+    maxLon: -50
+    minLat: 20
+    maxLat: 52
+    isobaths: 183
+flcur:
+    name: Florida Current
+    minLon: -83
+    maxLon: -73
+    minLat: 23
+    maxLat: 37
+    isobaths: 37,183
+floridacoast:
+    name: Florida Coast
+    minLon: -83
+    maxLon: -76.808
+    minLat: 23.79367
+    maxLat: 31.41183
+    isobaths: 183
+georgia:
+    name: Georgia Coast
+    minLon: -81.66867
+    maxLon: -77.11767
+    minLat: 30.0595
+    maxLat: 34.2135
+    isobaths: 15,37,183
+gulfmexico:
+    name: Gulf of Mexico
+    minLon: -98
+    maxLon: -80
+    minLat: 18
+    maxLat: 31
+    isobaths: 183,1829,3658
+gulfstream:
+    name: Gulf Stream
+    minLon: -77
+    maxLon: -50
+    minLat: 32
+    maxLat: 45
+    isobaths: 183,1829
+jcnerrs:
+    name: JCNERRS
+    minLon: -74.67
+    maxLon: -73.91
+    minLat: 39.21
+    maxLat: 39.72
+    isobaths: 5,15,25
+latte:
+    name: Latte
+    minLon: -74.336
+    maxLon: -73.214
+    minLat: 39.4505
+    maxLat: 40.6293
+    isobaths: 15,25,40,60
+leo:
+    name: Leo-15
+    minLon: -74.50733
+    maxLon: -73.65783
+    minLat: 39.16733
+    maxLat: 39.6775
+    isobaths: 15,24,34
+louis:
+    name: Louisiana
+    minLon: -94.55717
+    maxLon: -88.12567
+    minLat: 26.93067
+    maxLat: 30.84267
+    isobaths: 37,183
+maine:
+    name: Maine
+    minLon: -71.0956
+    maxLon: -62.994
+    minLat: 41.4526
+    maxLat: 46.0042
+    isobaths: 183
+northMAB:
+    name: North Mid-Atlantic Bight
+    minLon: -75
+    maxLon: -68
+    minLat: 38
+    maxLat: 42
+    isobaths: 20,40,60,80,100,200,2000
+nybight:
+    name: New York Bight
+    minLon: -76.00583
+    maxLon: -71.99417
+    minLat: 38.74533
+    maxLat: 41.5045
+    isobaths: 20,46,61,76,198
+southNE:
+    name: Southern New England
+    minLon: -73
+    maxLon: -69
+    minLat: 39
+    maxLat: 42
+    isobaths: 20,40,60,80,100,200,2000
+sw06:
+    name: Mid-Atlantic Bight
+    minLon: -77
+    maxLon: -69
+    minLat: 35
+    maxLat: 42
+    isobaths: 40,60,80,100,200,2000
+sw06.zoom:
+    name: Hudson Canyon Zoom
+    minLon: -73.5
+    maxLon: -71.5
+    minLat: 38.5
+    maxLat: 40.5
+    isobaths: 60,80,100,200,2000
