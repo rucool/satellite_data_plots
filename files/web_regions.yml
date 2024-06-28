@@ -7,6 +7,7 @@
 #     minT: MIN_COLORMAP_TEMPERATURE (degrees C, optional, defaults to monthly climatology)
 #     maxT: MAX_COLORMAP_TEMPERATURE (degrees C, optional, defaults to monthly climatology)
 #     isobaths: ISOBATHS_TO_PLOT (meters, optional, defaults to none)
+#     cloudT: CLOUD_TEMPERATURE (degrees C, temperature below this is removed as clouds)
 alabama:
     name: Alabama
     minLon: -88.33317

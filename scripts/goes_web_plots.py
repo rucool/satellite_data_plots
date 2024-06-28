@@ -32,6 +32,7 @@ def main(args):
     standard_names_file=args.standard_names_file
     bathyDir=args.bathyDir
     imgDir=args.imgDir
+    cloudTemp=args.cloudTemp
 
     print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: Starting raw GOES imagery.')
 
@@ -79,7 +80,7 @@ def main(args):
     climatology_full = get_climatology_layer(satData_full['time'].data, preferred_names=preferred_names)
     bathyFileList = get_bathymetry_file_info(bathyDir)
 
-    satData_full['sst'].data[satData_full['sst']<-1] = np.nan
+    satData_full['sst'].data[satData_full['sst']<cloudTemp] = np.nan
 
     for region in regions.keys():
         print(f'\n{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: Starting {region}.')
@@ -87,15 +88,15 @@ def main(args):
         if not os.path.isdir(imgDirRegion):
             print(f'Region {region} not available in directory {imgDir}. Skipping region.')
             continue
-        hrfname = os.path.join(imgDirRegion,'img', f'{pd.to_datetime(satData_full.time.data).strftime("%y%m%d.%j.%H%M")}.n00.jpg')
-        thumbfname = os.path.join(imgDirRegion,'thumb', f'{pd.to_datetime(satData_full.time.data).strftime("%y%m%d.%j.%H%M")}.n00thumb.jpg')
+        hrfname = os.path.join(imgDirRegion, 'sst', 'noaa', pd.to_datetime(satData_full.time.data).strftime("%y"), 'img', f'{pd.to_datetime(satData_full.time.data).strftime("%y%m%d.%j.%H%M")}.n00.jpg')
+        thumbfname = os.path.join(imgDirRegion, 'sst', 'noaa', pd.to_datetime(satData_full.time.data).strftime("%y"), 'thumb', f'{pd.to_datetime(satData_full.time.data).strftime("%y%m%d.%j.%H%M")}.n00thumb.jpg')
         if os.path.isfile(hrfname):
             print(f'Image {hrfname} for {region} already exists. Skipping.')
             continue
         if not os.path.isdir(os.path.split(hrfname)[0]):
-            os.mkdir(os.path.split(hrfname)[0])
+            os.makedirs(os.path.split(hrfname)[0], mode = 0o775, exist_ok=True)
         if not os.path.isdir(os.path.split(thumbfname)[0]):
-            os.mkdir(os.path.split(thumbfname)[0])
+            os.makedirs(os.path.split(thumbfname)[0], mode = 0o775, exist_ok=True)
         if not set(['minLon','maxLon','minLat','maxLat']).issubset(regions[region].keys()):
             print(f'Complete domain limits for region {region} are not included in {regionFile}. Unable to generate plot for {region}.')
             continue
@@ -124,6 +125,12 @@ def main(args):
         print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: subsetting SST.')
         sst_sub = satData_full.copy().sel(longitude=slice(extent[0]-.1, extent[1]+.1),
                                         latitude=slice(extent[2]-.1, extent[3]+.1))
+        if 'cloudT' in regions[region].keys():
+            try:
+                sst_sub['sst'].data[sst_sub['sst']<float(regions[region]['cloudT'])] = np.nan
+            except:
+                print(f'Unable to remove clouds <{regions[region]['cloudT']} in {region}.')
+        
         if (extent[1]-extent[0])<1.5 or (extent[3]-extent[2])<1.5:
             coastres='full'
         else:
@@ -195,6 +202,12 @@ if __name__ == '__main__':
                             default=os.path.join(os.getcwd(),'files','standardized_variable_names.yml'),
                             type=str,
                             help='File containing preferred names for variables and corresponding CF standard names and/or alternate name options')
+    
+    arg_parser.add_argument('-ct', '--cloud_low_temperature',
+                            dest='cloudTemp',
+                            default=-1,
+                            type=float,
+                            help='Minimum temperature to include (assume below this value is clouds, default -1C)')
 
     parsed_args = arg_parser.parse_args()
     sys.exit(main(parsed_args))
