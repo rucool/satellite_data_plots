@@ -16,4 +16,4 @@ BATHY_DIR=/path/to/directory/with/bathymetry/files/
 
 conda activate satellite_data_plots
 
-python ${TOOLBOX_DIR}/scripts/goes_web_plots.py -f ${TOOLBOX_DIR}/files/web_regions.txt -d ${IMG_DIR} -b BATHY_DIR -s ${TOOLBOX_DIR}/files/standardized_variable_names.txt
+python ${TOOLBOX_DIR}/scripts/goes_web_plots.py -f ${TOOLBOX_DIR}/files/web_regions.yml -d ${IMG_DIR} -b $BATHY_DIR -s ${TOOLBOX_DIR}/files/standardized_variable_names.yml

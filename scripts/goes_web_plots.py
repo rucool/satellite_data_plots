@@ -88,8 +88,8 @@ def main(args):
         if not os.path.isdir(imgDirRegion):
             print(f'Region {region} not available in directory {imgDir}. Skipping region.')
             continue
-        hrfname = os.path.join(imgDirRegion, 'sst', 'noaa', pd.to_datetime(satData_full.time.data).strftime("%y"), 'img', f'{pd.to_datetime(satData_full.time.data).strftime("%y%m%d.%j.%H%M")}.n00.jpg')
-        thumbfname = os.path.join(imgDirRegion, 'sst', 'noaa', pd.to_datetime(satData_full.time.data).strftime("%y"), 'thumb', f'{pd.to_datetime(satData_full.time.data).strftime("%y%m%d.%j.%H%M")}.n00thumb.jpg')
+        hrfname = os.path.join(imgDirRegion, 'sst', 'noaa', pd.to_datetime(satData_full.time.data).strftime("%Y"), 'img', f'{pd.to_datetime(satData_full.time.data).strftime("%y%m%d.%j.%H%M")}.n00.jpg')
+        thumbfname = os.path.join(imgDirRegion, 'sst', 'noaa', pd.to_datetime(satData_full.time.data).strftime("%Y"), 'thumb', f'{pd.to_datetime(satData_full.time.data).strftime("%y%m%d.%j.%H%M")}.n00thumb.jpg')
         if os.path.isfile(hrfname):
             print(f'Image {hrfname} for {region} already exists. Skipping.')
             continue
