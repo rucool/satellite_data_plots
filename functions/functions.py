@@ -315,7 +315,11 @@ def get_satellite_layer(t0='now',
             try:
                 satdata = xr.open_dataset(tdslink)
                 if preferred_names:
-                    satdata = standardize_var_names(satdata, preferred_names=preferred_names)
+                    try:
+                        satdata = standardize_var_names(satdata, preferred_names=preferred_names)
+                    except:
+                        print("Error remapping variable names.")
+                        return 1
                 t = pd.to_datetime(satdata['time'].data)
                 satdata = satdata.sel(time=t[np.argmin(np.abs(t-t0))])
                 satdata = satdata[variable_list]
