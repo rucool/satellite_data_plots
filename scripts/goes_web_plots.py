@@ -110,7 +110,9 @@ def main(args):
             if 'name' not in regions[region].keys():
                 regions[region]['name'] = region
             extent = [regions[region]['minLon'], regions[region]['maxLon'], regions[region]['minLat'], regions[region]['maxLat']]
+            print('Getting climatology based temp limits.')
             v0,v1 = get_climatology_limits(extent, climatology_full)
+            print(f'Climatology: {v0}-{v1}')
             if 'minT' not in regions[region].keys():
                 regions[region]['minT'] = v0
             try:
@@ -123,10 +125,12 @@ def main(args):
                 regions[region]['maxT'] = float(regions[region]['maxT'])
             except:
                 print(f'maximum temperature for {region} not recognized as numeric. Using default from climatology.')
+            print(f"Updated temp range: {regions[region]['minT']}-{regions[region]['maxT']}")
             if regions[region]['maxT'] - regions[region]['minT'] < 2:
                 print('Provided temperature range <2C, defaulting back to climatology.')
                 regions[region]['minT'] = v0
                 regions[region]['maxT'] = v1
+            print(f"Final temp range: {regions[region]['minT']}-{regions[region]['maxT']}")
             print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: subsetting SST.')
             sst_sub = satData_full.copy().sel(longitude=slice(extent[0]-.1, extent[1]+.1),
                                             latitude=slice(extent[2]-.1, extent[3]+.1))
