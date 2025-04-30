@@ -99,7 +99,6 @@ jcnerrs:
     minLat: 39.21
     maxLat: 39.72
     isobaths: 5,15,25
-    minT: 16
 latte:
     name: Latte
     minLon: -74.336
