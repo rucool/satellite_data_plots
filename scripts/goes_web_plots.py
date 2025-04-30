@@ -83,91 +83,97 @@ def main(args):
     satData_full['sst'].data[satData_full['sst']<cloudTemp] = np.nan
 
     for region in regions.keys():
-        print(f'\n{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: Starting {region}.')
-        imgDirRegion = os.path.join(imgDir, region)
-        if not os.path.isdir(imgDirRegion):
-            print(f'Region {region} not available in directory {imgDir}. Skipping region.')
-            continue
-        hrfname = os.path.join(imgDirRegion, 'sst', 'noaa', pd.to_datetime(satData_full.time.data).strftime("%Y"), 'img', f'{pd.to_datetime(satData_full.time.data).strftime("%y%m%d.%j.%H%M")}.n00.jpg')
-        thumbfname = os.path.join(imgDirRegion, 'sst', 'noaa', pd.to_datetime(satData_full.time.data).strftime("%Y"), 'thumb', f'{pd.to_datetime(satData_full.time.data).strftime("%y%m%d.%j.%H%M")}.n00thumb.jpg')
-        if os.path.isfile(hrfname):
-            print(f'Image {hrfname} for {region} already exists. Skipping.')
-            continue
-        if not os.path.isdir(os.path.split(hrfname)[0]):
-            os.makedirs(os.path.split(hrfname)[0], mode = 0o775, exist_ok=True)
-        if not os.path.isdir(os.path.split(thumbfname)[0]):
-            os.makedirs(os.path.split(thumbfname)[0], mode = 0o775, exist_ok=True)
-        if not set(['minLon','maxLon','minLat','maxLat']).issubset(regions[region].keys()):
-            print(f'Complete domain limits for region {region} are not included in {regionFile}. Unable to generate plot for {region}.')
-            continue
-        if regions[region]['maxLon']<=regions[region]['minLon']:
-            print(f'minLon exceeds maxLon for region {region}. Check domain listed in {regionFile}. Unable to generate plot for {region}.')
-            continue
-        if regions[region]['maxLat']<=regions[region]['minLat']:
-            print(f'minLat exceeds maxLat for region {region}. Check domain listed in {regionFile}. Unable to generate plot for {region}.')
-            continue
-        if 'name' not in regions[region].keys():
-            regions[region]['name'] = region
-        extent = [regions[region]['minLon'], regions[region]['maxLon'], regions[region]['minLat'], regions[region]['maxLat']]
-        v0,v1 = get_climatology_limits(extent, climatology_full)
-        if 'minT' not in regions[region].keys():
-            regions[region]['minT'] = v0
         try:
-            regions[region]['minT'] = float(regions[region]['minT'])
-        except:
-            print(f'minimum temperature for {region} not recognized as numeric. Using default from climatology.')
-        if 'maxT' not in regions[region].keys():
-            regions[region]['maxT'] = v1
-        try:
-            regions[region]['maxT'] = float(regions[region]['maxT'])
-        except:
-            print(f'maximum temperature for {region} not recognized as numeric. Using default from climatology.')
-        print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: subsetting SST.')
-        sst_sub = satData_full.copy().sel(longitude=slice(extent[0]-.1, extent[1]+.1),
-                                        latitude=slice(extent[2]-.1, extent[3]+.1))
-        if 'cloudT' in regions[region].keys():
+            print(f'\n{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: Starting {region}.')
+            imgDirRegion = os.path.join(imgDir, region)
+            if not os.path.isdir(imgDirRegion):
+                print(f'Region {region} not available in directory {imgDir}. Skipping region.')
+                continue
+            hrfname = os.path.join(imgDirRegion, 'sst', 'noaa', pd.to_datetime(satData_full.time.data).strftime("%Y"), 'img', f'{pd.to_datetime(satData_full.time.data).strftime("%y%m%d.%j.%H%M")}.n00.jpg')
+            thumbfname = os.path.join(imgDirRegion, 'sst', 'noaa', pd.to_datetime(satData_full.time.data).strftime("%Y"), 'thumb', f'{pd.to_datetime(satData_full.time.data).strftime("%y%m%d.%j.%H%M")}.n00thumb.jpg')
+            if os.path.isfile(hrfname):
+                print(f'Image {hrfname} for {region} already exists. Skipping.')
+                continue
+            if not os.path.isdir(os.path.split(hrfname)[0]):
+                os.makedirs(os.path.split(hrfname)[0], mode = 0o775, exist_ok=True)
+            if not os.path.isdir(os.path.split(thumbfname)[0]):
+                os.makedirs(os.path.split(thumbfname)[0], mode = 0o775, exist_ok=True)
+            if not set(['minLon','maxLon','minLat','maxLat']).issubset(regions[region].keys()):
+                print(f'Complete domain limits for region {region} are not included in {regionFile}. Unable to generate plot for {region}.')
+                continue
+            if regions[region]['maxLon']<=regions[region]['minLon']:
+                print(f'minLon exceeds maxLon for region {region}. Check domain listed in {regionFile}. Unable to generate plot for {region}.')
+                continue
+            if regions[region]['maxLat']<=regions[region]['minLat']:
+                print(f'minLat exceeds maxLat for region {region}. Check domain listed in {regionFile}. Unable to generate plot for {region}.')
+                continue
+            if 'name' not in regions[region].keys():
+                regions[region]['name'] = region
+            extent = [regions[region]['minLon'], regions[region]['maxLon'], regions[region]['minLat'], regions[region]['maxLat']]
+            v0,v1 = get_climatology_limits(extent, climatology_full)
+            if 'minT' not in regions[region].keys():
+                regions[region]['minT'] = v0
             try:
-                sst_sub['sst'].data[sst_sub['sst']<float(regions[region]['cloudT'])] = np.nan
+                regions[region]['minT'] = float(regions[region]['minT'])
             except:
-                print(f'Unable to remove clouds <{regions[region]['cloudT']} in {region}.')
-        
-        if (extent[1]-extent[0])<1.5 or (extent[3]-extent[2])<1.5:
-            coastres='full'
-        else:
-            coastres='high'
-        
-        print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: initializing figure.')
-        fig, ax = plt.subplots(figsize=(11,8), #12,9
-                subplot_kw=dict(projection=proj['map'])
-                )
-        ax.set_extent(extent, crs=proj['data'])
-        print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: adding land.')
-        cplt.add_features(ax,oceancolor='none', coast=coastres)
-        print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: adding bathymetry.')
-        if 'isobaths' in regions[region].keys():
-            bathy = get_best_bathymetry(extent=extent, file_list=bathyFileList)
-            isobaths = re.split(', | |,', str(regions[region]['isobaths']))
-            isobaths = np.sort(-np.array(isobaths).astype(float))
-            cplt.add_bathymetry(ax, bathy['longitude'].data, bathy['latitude'].data, bathy['z'].data,method='shadedcontour',levels=isobaths, zorder=6, fontsize=9)
-        print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: adding SST.')
-        pch = ax.pcolormesh(sst_sub['longitude'], sst_sub['latitude'], 
-                            np.squeeze(sst_sub['sst']),
-                            vmin=regions[region]['minT'], vmax=regions[region]['maxT'], 
-                            cmap='jet', transform=proj['data'], zorder=5)
-        
-        print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: formatting.')
-        plt.title(f'GOES Sea Surface Temperature: {pd.to_datetime(sst_sub.time.data).strftime("%b %d %Y %H%M")} GMT\n', fontsize=13)
-        plt.text(np.mean(extent[:2]), extent[3]+(extent[3]-extent[2])*.02, 'Courtesy of RUCOOL and U. Delaware ORB Labs, no cloud correction applied', fontsize=9, ha='center', transform=proj['data'])
+                print(f'minimum temperature for {region} not recognized as numeric. Using default from climatology.')
+            if 'maxT' not in regions[region].keys():
+                regions[region]['maxT'] = v1
+            try:
+                regions[region]['maxT'] = float(regions[region]['maxT'])
+            except:
+                print(f'maximum temperature for {region} not recognized as numeric. Using default from climatology.')
+            if v1-v0<2:
+                print('Provided temperature range <2C, defaulting back to climatology.')
+                v0,v1 = get_climatology_limits(extent, climatology_full)
+            print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: subsetting SST.')
+            sst_sub = satData_full.copy().sel(longitude=slice(extent[0]-.1, extent[1]+.1),
+                                            latitude=slice(extent[2]-.1, extent[3]+.1))
+            if 'cloudT' in regions[region].keys():
+                try:
+                    sst_sub['sst'].data[sst_sub['sst']<float(regions[region]['cloudT'])] = np.nan
+                except:
+                    print(f'Unable to remove clouds <{regions[region]['cloudT']} in {region}.')
+            
+            if (extent[1]-extent[0])<1.5 or (extent[3]-extent[2])<1.5:
+                coastres='full'
+            else:
+                coastres='high'
+            
+            print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: initializing figure.')
+            fig, ax = plt.subplots(figsize=(11,8), #12,9
+                    subplot_kw=dict(projection=proj['map'])
+                    )
+            ax.set_extent(extent, crs=proj['data'])
+            print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: adding land.')
+            cplt.add_features(ax,oceancolor='none', coast=coastres)
+            print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: adding bathymetry.')
+            if 'isobaths' in regions[region].keys():
+                bathy = get_best_bathymetry(extent=extent, file_list=bathyFileList)
+                isobaths = re.split(', | |,', str(regions[region]['isobaths']))
+                isobaths = np.sort(-np.array(isobaths).astype(float))
+                cplt.add_bathymetry(ax, bathy['longitude'].data, bathy['latitude'].data, bathy['z'].data,method='shadedcontour',levels=isobaths, zorder=6, fontsize=9)
+            print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: adding SST.')
+            pch = ax.pcolormesh(sst_sub['longitude'], sst_sub['latitude'], 
+                                np.squeeze(sst_sub['sst']),
+                                vmin=regions[region]['minT'], vmax=regions[region]['maxT'], 
+                                cmap='jet', transform=proj['data'], zorder=5)
+            
+            print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: formatting.')
+            plt.title(f'GOES Sea Surface Temperature: {pd.to_datetime(sst_sub.time.data).strftime("%b %d %Y %H%M")} GMT\n', fontsize=13)
+            plt.text(np.mean(extent[:2]), extent[3]+(extent[3]-extent[2])*.02, 'Courtesy of RUCOOL and U. Delaware ORB Labs, no cloud correction applied', fontsize=9, ha='center', transform=proj['data'])
 
-        cplt.add_ticks(ax=ax, extent=extent, fontsize=11)
-        cplt.add_double_temp_colorbar(ax=ax, h=pch, vmin=regions[region]['minT'], vmax=regions[region]['maxT'], fontsize=11)
-        
-        print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: saving hi-res to {hrfname}.')
-        fig.savefig(hrfname, bbox_inches='tight', pad_inches=0.1, dpi=300)
-        print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: saving thumbnail to {thumbfname}.')
-        fig.savefig(thumbfname, bbox_inches='tight', pad_inches=0.02, dpi=20)
-        plt.close()
-        print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: complete.')
+            cplt.add_ticks(ax=ax, extent=extent, fontsize=11)
+            cplt.add_double_temp_colorbar(ax=ax, h=pch, vmin=regions[region]['minT'], vmax=regions[region]['maxT'], fontsize=11)
+            
+            print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: saving hi-res to {hrfname}.')
+            fig.savefig(hrfname, bbox_inches='tight', pad_inches=0.1, dpi=300)
+            print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: saving thumbnail to {thumbfname}.')
+            fig.savefig(thumbfname, bbox_inches='tight', pad_inches=0.02, dpi=20)
+            plt.close()
+            print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: complete.')
+        except:
+            pass
 
 
 if __name__ == '__main__':

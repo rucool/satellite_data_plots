@@ -50,7 +50,6 @@ chess:
     minLat: 36.271
     maxLat: 39.74617
     isobaths: 37,183
-    minT: 16
 eastcoast:
     name: Eastcoast
     minLon: -100
@@ -108,7 +107,6 @@ latte:
     minLat: 39.4505
     maxLat: 40.6293
     isobaths: 15,25,40,60
-    minT: 16
 leo:
     name: Leo-15
     minLon: -74.50733
@@ -116,7 +114,6 @@ leo:
     minLat: 39.16733
     maxLat: 39.6775
     isobaths: 15,24,34
-    minT: 16
 louis:
     name: Louisiana
     minLon: -94.55717
@@ -145,7 +142,6 @@ nybight:
     minLat: 38.74533
     maxLat: 41.5045
     isobaths: 20,46,61,76,198
-    minT: 16
 southNE:
     name: Southern New England
     minLon: -73
