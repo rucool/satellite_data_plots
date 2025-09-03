@@ -43,7 +43,7 @@ capehat:
     minLat: 33.0685
     maxLat: 37
     minT: 21
-    maxT: 28
+    maxT: 30
     isobaths: 37,183
 chess:
     name: Chesapeake Bay
