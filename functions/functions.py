@@ -362,7 +362,33 @@ def get_satellite_layer(t0='now',
                 else:
                     got_data = True
             except:
-                print(f'Unable to grab data from server {erddap_server} dataset {erddap_dataset}.')
+                try:
+                    print(f'reading from ERDDAP {erddap_server} dataset {erddap_dataset}')
+                    # e = ERDDAP(server=erddap_server,
+                            protocol='griddap')
+                    # e.dataset_id = erddap_dataset
+                    # e.griddap_initialize()
+                    # e.variables = variable_list
+                    # e.constraints['time>='] = (t0-pd.Timedelta(hours=max_tdiff)).strftime('%Y-%m-%dT%H:%M%S')
+                    # e.constraints['time<='] = (t0+pd.Timedelta(hours=max_tdiff)).strftime('%Y-%m-%dT%H:%M%S')
+                    satdata = xr.open_dataset(os.path.join(erddap_server, 'griddap', erddap_dataset))
+                    if preferred_names:
+                        try:
+                            satdata = standardize_var_names(satdata, preferred_names=preferred_names)
+                        except:
+                            print("Error remapping variable names.")
+                            return 1
+                    satdata = satdata[variable_list]
+                    t = pd.to_datetime(satdata['time'].data)
+                    satdata = satdata.sel(time=t[np.argmin(np.abs(t-t0))])
+                    satdata.close()
+                    td = np.abs((pd.to_datetime(satdata['time'].data)-t0).total_seconds()/60/60)
+                    if td > max_tdiff:
+                        print(f'{os.path.join(erddap_server,erddap_dataset)} data {td} hours off from {t0.strftime("%Y-%m-%d %H:%M")}.')
+                    else:
+                        got_data = True
+                except:
+                    print(f'Unable to grab data from server {erddap_server} dataset {erddap_dataset}.')
         else:
             print(f'Skipping {datasettype}, not supported. Please choose from {" or ".join(priority_options)}')
             continue
