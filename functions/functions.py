@@ -365,7 +365,7 @@ def get_satellite_layer(t0='now',
                 try:
                     print(f'reading from ERDDAP {erddap_server} dataset {erddap_dataset}')
                     # e = ERDDAP(server=erddap_server,
-                            protocol='griddap')
+                    #         protocol='griddap')
                     # e.dataset_id = erddap_dataset
                     # e.griddap_initialize()
                     # e.variables = variable_list
