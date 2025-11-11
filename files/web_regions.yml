@@ -87,8 +87,6 @@ gulfmexico:
     minLat: 18
     maxLat: 31
     isobaths: 183,1829,3658
-    minT: 25
-    maxT: 33.2
 gulfstream:
     name: Gulf Stream
     minLon: -77
