@@ -285,10 +285,10 @@ def get_climatology_limits(extent, climatology,
 def get_satellite_layer(t0='now',
                         tdslink='http://basin.ceoe.udel.edu/thredds/dodsC/GOESNOAASST.nc',
                         erddap_server='http://basin.ceoe.udel.edu/erddap/',
-                        erddap_dataset='GOESNOAASST',
+                        erddap_dataset='NOAA_GOES19_SST',
                         max_tdiff=72,
                         variable_list=['sst'],
-                        priority=['thredds'],
+                        priority=['thredds', 'erddap'],
                         preferred_names=None):
     """
     Get satellite data at single time layer
