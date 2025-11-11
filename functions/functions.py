@@ -313,6 +313,7 @@ def get_satellite_layer(t0='now',
                 print(f'Skipping {datasettype}, tdslink not provided.')
                 continue
             try:
+                print(f'Reading from {tdslink}')
                 satdata = xr.open_dataset(tdslink)
                 if preferred_names:
                     try:
@@ -336,16 +337,22 @@ def get_satellite_layer(t0='now',
                 print(f'Skipping {datasettype}, erddap info (server and/or dataset) not provided.')
                 continue
             try:
+                print(f'reading from ERDDAP {erddap_server} dataset {erddap_dataset}')
                 e = ERDDAP(server=erddap_server,
                         protocol='griddap')
                 e.dataset_id = erddap_dataset
                 e.griddap_initialize()
-                e.variables = variable_list
+                # e.variables = variable_list
                 e.constraints['time>='] = (t0-pd.Timedelta(hours=max_tdiff)).strftime('%Y-%m-%dT%H:%M%S')
                 e.constraints['time<='] = (t0+pd.Timedelta(hours=max_tdiff)).strftime('%Y-%m-%dT%H:%M%S')
                 satdata = e.to_xarray()
                 if preferred_names:
-                    satdata = standardize_var_names(satdata, preferred_names=preferred_names)
+                    try:
+                        satdata = standardize_var_names(satdata, preferred_names=preferred_names)
+                    except:
+                        print("Error remapping variable names.")
+                        return 1
+                satdata = satdata[variable_list]
                 t = pd.to_datetime(satdata['time'].data)
                 satdata = satdata.sel(time=t[np.argmin(np.abs(t-t0))])
                 satdata.close()
