@@ -33,6 +33,8 @@ def main(args):
     bathyDir=args.bathyDir
     imgDir=args.imgDir
     cloudTemp=args.cloudTemp
+    clobber=args.clobber
+    composite=args.composite
 
     print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: Starting raw GOES imagery.')
 
@@ -72,7 +74,12 @@ def main(args):
         preferred_names = None
     
     print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: Reading GOES data nearest {pd.to_datetime(t0).strftime("%Y-%m-%d %H:%M")}.')
-    satData_full = get_satellite_layer(t0=t0, preferred_names=preferred_names)
+    if composite:
+        satData_full = get_satellite_layer(t0=t0, preferred_names=preferred_names,
+                                           erddap_dataset='NOAA_GOES19_SST_clean_comp',
+                                           priority='erddap')
+    else:
+        satData_full = get_satellite_layer(t0=t0, preferred_names=preferred_names)
     if type(satData_full)!=xr.Dataset:
         print('Could not get satellite data. Exiting.')
         return 1
@@ -82,6 +89,11 @@ def main(args):
 
     satData_full['sst'].data[satData_full['sst']<cloudTemp] = np.nan
 
+    if composite:
+        hhlabel = '24'
+    else:
+        hhlabel = '00'
+
     for region in regions.keys():
         try:
             print(f'\n{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: Starting {region}.')
@@ -89,9 +101,9 @@ def main(args):
             if not os.path.isdir(imgDirRegion):
                 print(f'Region {region} not available in directory {imgDir}. Skipping region.')
                 continue
-            hrfname = os.path.join(imgDirRegion, 'sst', 'noaa', pd.to_datetime(satData_full.time.data).strftime("%Y"), 'img', f'{pd.to_datetime(satData_full.time.data).strftime("%y%m%d.%j.%H%M")}.n00.jpg')
-            thumbfname = os.path.join(imgDirRegion, 'sst', 'noaa', pd.to_datetime(satData_full.time.data).strftime("%Y"), 'thumb', f'{pd.to_datetime(satData_full.time.data).strftime("%y%m%d.%j.%H%M")}.n00thumb.jpg')
-            if os.path.isfile(hrfname):
+            hrfname = os.path.join(imgDirRegion, 'sst', 'noaa', pd.to_datetime(satData_full.time.data).strftime("%Y"), 'img', f'{pd.to_datetime(satData_full.time.data).strftime("%y%m%d.%j.%H%M")}.n{hhlabel}.jpg')
+            thumbfname = os.path.join(imgDirRegion, 'sst', 'noaa', pd.to_datetime(satData_full.time.data).strftime("%Y"), 'thumb', f'{pd.to_datetime(satData_full.time.data).strftime("%y%m%d.%j.%H%M")}.n{hhlabel}thumb.jpg')
+            if not clobber and os.path.isfile(hrfname):
                 print(f'Image {hrfname} for {region} already exists. Skipping.')
                 continue
             if not os.path.isdir(os.path.split(hrfname)[0]):
@@ -165,7 +177,10 @@ def main(args):
                                 cmap='jet', transform=proj['data'], zorder=5)
             
             print(f'{pd.to_datetime("now").strftime("%Y-%m-%d %H:%M:%S")}: {region}: formatting.')
-            plt.title(f'GOES Sea Surface Temperature: {pd.to_datetime(sst_sub.time.data).strftime("%b %d %Y %H%M")} GMT\n', fontsize=13)
+            if composite:
+                plt.title(f'GOES SST {hhlabel}-hour Composite: {pd.to_datetime(sst_sub.time.data).strftime("%b %d %Y %H%M")} GMT\n', fontsize=13)
+            else:
+                plt.title(f'GOES Sea Surface Temperature: {pd.to_datetime(sst_sub.time.data).strftime("%b %d %Y %H%M")} GMT\n', fontsize=13)
             plt.text(np.mean(extent[:2]), extent[3]+(extent[3]-extent[2])*.02, 'Courtesy of RUCOOL and U. Delaware ORB Labs, no cloud correction applied', fontsize=9, ha='center', transform=proj['data'])
 
             cplt.add_ticks(ax=ax, extent=extent, fontsize=11)
@@ -219,6 +234,14 @@ if __name__ == '__main__':
                             default=-1,
                             type=float,
                             help='Minimum temperature to include (assume below this value is clouds, default -1C)')
+    
+    arg_parser.add_argument('-c', '--clobber',
+                            action='store_true',
+                            help='Overwrite existing files')
+    
+    arg_parser.add_argument('-comp', '--composite',
+                            action='store_true',
+                            help='Generate 24-hour composite image instead of raw hourly')
 
     parsed_args = arg_parser.parse_args()
     sys.exit(main(parsed_args))
