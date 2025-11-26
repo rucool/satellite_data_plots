@@ -116,9 +116,9 @@ def standardize_units(xrDataset,
     """
     unit_list = dict()
     id_list = dict()
-    unit_list['temperature'] = {'degrees_C': ['degrees_c', 'c', 'degrees_celsius', 'celsius'],
-                                'degrees_F': ['degrees_f', 'f', 'degrees_fahrenheit', 'fahrenheit'],
-                                'degrees_K': ['degrees_k', 'k', 'degrees_kelvin', 'kelvin']}
+    unit_list['temperature'] = {'degrees_C': ['degrees_c', 'c', 'degrees_celsius', 'celsius', 'degree_c', 'degree_celsius'],
+                                'degrees_F': ['degrees_f', 'f', 'degrees_fahrenheit', 'fahrenheit', 'degree_f', 'degree_fahrenheit'],
+                                'degrees_K': ['degrees_k', 'k', 'degrees_kelvin', 'kelvin', 'degree_k', 'degree_kelvin']}
     id_list['temperature'] = {'names': ['sst', 'temperature'],
                               'name_includes': ['temperature'],
                               'standard_name_includes': ['temperature']}
